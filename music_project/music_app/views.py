@@ -22,6 +22,7 @@ class SongList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SongDetail(APIView):
 
     def get_by_id(self, pk):
@@ -43,14 +44,18 @@ class SongDetail(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, pk):
-        song_id = self.get_by_id(pk)
-        serializer = SongSerializer(song_id, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-
     def delete(self, request, pk):
         song_id = self.get_by_id(pk)
         deletedSong = SongSerializer(song_id)
         song_id.delete()
         return Response(deletedSong.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        song_id = self.get_by_id(pk)
+        serializer = SongSerializer(song_id, data=request.data, partial=True)
+        if serializer.is_valid():
+            Song.like.update(1)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

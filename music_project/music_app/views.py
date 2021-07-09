@@ -52,9 +52,9 @@ class SongDetail(APIView):
 
     def patch(self, request, pk):
         song_id = self.get_by_id(pk)
+        song_id.like += 1
         serializer = SongSerializer(song_id, data=request.data, partial=True)
         if serializer.is_valid():
-            Song.like.update(1)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
